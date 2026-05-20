@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+
+# Local runtime configuration
+.env
+.env.*
+!.env.example
+config.json
+config.local.json
+*.local
+
+# Runtime data may contain private prompts, local paths, provider metadata,
+# WeChat account state, health-check output, or user content.
+data/*.json
+data/**/*.json
+data/logs/
+!data/.gitkeep
+
+# Build/test/cache output
+coverage/
+dist/
+.nyc_output/
+.cache/
+
+# npm/yarn/pnpm logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+*.log

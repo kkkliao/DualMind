@@ -1,0 +1,40 @@
+{
+  "server": {
+    "host": "127.0.0.1",
+    "port": 3000
+  },
+  "setup": {
+    "completed": false,
+    "language": "zh"
+  },
+  "openclaw": {
+    "binPath": "",
+    "gatewayUrl": "http://127.0.0.1:18789",
+    "mode": "agent",
+    "agentId": "main",
+    "sessionId": "dualmind-openclaw"
+  },
+  "hermes": {
+    "binPath": "",
+    "sessionId": "dualmind-hermes"
+  },
+  "roleMode": "openclaw-main",
+  "collaboration": {
+    "availableRoleModes": [
+      "openclaw-main",
+      "hermes-main"
+    ],
+    "dailyChatPolicy": "free_both_can_speak",
+    "showCoordination": true,
+    "negotiationMessageBudget": 6,
+    "architectureDebateMessageBudget": 10
+  },
+  "safety": {
+    "confirmRisky": true,
+    "allowRemoteCodeExecution": false
+  },
+  "wechat": {
+    "enabled": false,
+    "authorizedUsers": []
+  }
+}

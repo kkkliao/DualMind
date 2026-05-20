@@ -1,0 +1,29 @@
+{
+  "name": "dualmind",
+  "version": "2.0.0",
+  "description": "Local OpenClaw × Hermes group chat coordinator",
+  "main": "server.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "service:install": "node scripts/dualmind-service.js install",
+    "service:start": "node scripts/dualmind-service.js start",
+    "service:stop": "node scripts/dualmind-service.js stop",
+    "service:restart": "node scripts/dualmind-service.js restart",
+    "service:status": "node scripts/dualmind-service.js status",
+    "service:uninstall": "node scripts/dualmind-service.js uninstall",
+    "check": "node --check server.js && node --check public/app.js && node --check scripts/check-i18n.js && node --check scripts/dualmind-service.js && node --check src/app-factory.js && node --check src/utils/cli.js && node --check src/agents/adapter-contract.js && node --check src/agents/openclaw-adapter.js && node --check src/agents/hermes-adapter.js && node --check src/channels/wechat-channel.js && node --check src/coordinator/roles.js && node --check src/coordinator/intent.js && node --check src/coordinator/execution-capability.js && node --check src/coordinator/execution-lock.js && node --check src/coordinator/policy.js && node --check src/coordinator/remote-policy.js && node --check src/coordinator/speaker-policy.js && node --check src/coordinator/turn-status.js && node --check src/streaming/sse-writer.js && node --check src/streaming/simulated-stream.js && node --check src/store/config-store.js && node --check src/store/task-store.js && node --check src/store/turn-store.js && npm run i18n:check",
+    "i18n:check": "node scripts/check-i18n.js",
+    "test": "node --test",
+    "verify": "npm run check && npm test"
+  },
+  "dependencies": {
+    "@tencent-weixin/openclaw-weixin": "^2.4.3",
+    "@tencent-weixin/openclaw-weixin-cli": "^2.1.4",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "qrcode": "^1.5.4"
+  }
+}

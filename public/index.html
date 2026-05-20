@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🦞🤖 DualMind — OpenClaw × Hermes</title>
+  <link rel="stylesheet" href="/style.css?v={{ASSET_VERSION}}">
+</head>
+<body>
+<div id="app">
+  <aside id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-row">
+        <img src="/oc-avatar.png" class="logo-icon-lg" alt="OpenClaw">
+        <img src="/hermes-avatar.png" class="logo-icon-lg" alt="Hermes">
+      </div>
+      <h1>DualMind</h1>
+      <p class="subtitle">OpenClaw × Hermes</p>
+    </div>
+    <div class="status-panel">
+      <div class="agent-status">
+        <img src="/oc-avatar.png" class="s-avatar" id="oc-dot-img">
+        <div class="agent-info">
+          <span class="agent-name">OpenClaw</span>
+          <span class="agent-detail" id="oc-detail">检测中...</span>
+        </div>
+      </div>
+      <div class="agent-status">
+        <img src="/hermes-avatar.png" class="s-avatar" id="h-dot-img">
+        <div class="agent-info">
+          <span class="agent-name">Hermes</span>
+          <span class="agent-detail" id="h-detail">检测中...</span>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-nav">
+      <button class="nav-btn active" data-tab="chat" data-i18n="navChat">💬 群聊 / Chat</button>
+      <button class="nav-btn" data-tab="turns" data-i18n="navTurns">🧭 回合 / Turns</button>
+      <button class="nav-btn" data-tab="settings" data-i18n="navSettings">⚙️ 设置 / Settings</button>
+      <button class="nav-btn" data-tab="docs" data-i18n="navDocs">📖 说明 / Docs</button>
+    </div>
+    <div class="sidebar-actions">
+      <select id="lang-select" class="form-i" aria-label="Language">
+        <option value="zh">中文</option>
+        <option value="en">English</option>
+      </select>
+      <button class="nav-btn" onclick="toggleTheme()" data-i18n="themeBtn">🌓 主题</button>
+      <button class="nav-btn" onclick="exportChat()" data-i18n="exportBtn">📥 导出</button>
+    </div>
+    <div class="sidebar-footer">v2.0</div>
+  </aside>
+
+  <main id="main-content">
+    <div id="panel-chat" class="panel active">
+      <div class="chat-header">
+        <div class="chat-title-wrap">
+          <h2 data-i18n="chatHeader">💬 群聊 / Group Chat</h2>
+          <div class="policy-strip" aria-live="polite">
+            <span id="mode-chip" class="policy-chip">...</span>
+            <span id="executor-chip" class="policy-chip">...</span>
+            <span id="remote-chip" class="policy-chip safe">...</span>
+            <span id="stream-chip" class="policy-chip">...</span>
+          </div>
+        </div>
+        <button id="clear-chat" class="icon-btn" data-i18n-title="clearChatTitle" title="清空聊天">🗑️</button>
+      </div>
+      <div id="chat-msgs" class="chat-msgs">
+        <div class="chat-welcome">
+          <div class="chat-w-icon">
+            <img src="/oc-avatar.png" class="w-avatar"><img src="/hermes-avatar.png" class="w-avatar">
+          </div>
+          <h3 data-i18n="welcomeTitle">DualMind 群聊</h3>
+          <p data-i18n="welcomeMembers">👤 User · 🦞 OpenClaw · 🤖 Hermes</p>
+          <p class="chat-w-hint" data-i18n="welcomeHint">@OpenClaw 或 @Hermes 指定回复，不艾特则按当前角色模式协作</p>
+        </div>
+      </div>
+      <div class="chat-mentions">
+        <button class="mention-btn" onclick="insertMention('@OpenClaw ')"><img src="/oc-avatar.png" class="m-avatar"> @OpenClaw</button>
+        <button class="mention-btn" onclick="insertMention('@Hermes ')"><img src="/hermes-avatar.png" class="m-avatar"> @Hermes</button>
+        <span class="mention-hint" data-i18n="mentionHint">点击粘贴到输入框</span>
+      </div>
+      <div class="chat-input-area">
+        <textarea id="chat-inp" placeholder="输入消息 / Enter 发送" rows="1"></textarea>
+        <button id="send-btn" class="send-btn" disabled>➤</button>
+      </div>
+    </div>
+
+    <div id="panel-settings" class="panel">
+      <div class="panel-header"><h2 data-i18n="settingsHeader">⚙️ 设置 / Settings</h2><span id="sv-st" class="save-status"></span></div>
+      <div class="panel-body">
+        <section class="set-sec"><h3>🦞 OpenClaw</h3>
+          <div class="form-g"><label data-i18n="ocCliLabel">CLI 路径 / CLI Path</label><input id="oc-path" placeholder="/usr/local/bin/openclaw" class="form-i"><p class="form-h" data-i18n-html="ocCliHint">💡 留空会自动检测 PATH 和常见安装位置 / Leave empty to auto-detect.</p></div>
+          <div class="form-g"><label>Gateway URL</label><input id="oc-url" placeholder="http://localhost:18789" class="form-i"><p class="form-h" data-i18n-html="ocGatewayHint">💡 <code>ps aux | grep openclaw</code> 查看端口</p></div>
+          <div class="form-g"><label data-i18n="ocModeLabel">OpenClaw 模式</label><select id="oc-mode" class="form-i"><option value="agent" data-i18n="ocModeAgent">Agent 执行模式</option><option value="infer" data-i18n="ocModeInfer">Infer 快速聊天模式</option></select><p class="form-h" data-i18n="ocModeHint">OpenClaw 作为主 AI 执行任务时应使用 Agent 执行模式；Infer 只适合快速聊天和规划。</p></div>
+          <div class="test-row"><button id="oc-test-btn" class="btn-sec" data-i18n="testOpenClaw">测试 OpenClaw 回复</button><span id="oc-test-st" class="test-status"></span></div>
+        </section>
+        <section class="set-sec"><h3>🤖 Hermes</h3>
+          <div class="form-g"><label data-i18n="hermesCliLabel">CLI 路径</label><input id="h-path" placeholder="/usr/local/bin/hermes" class="form-i"><p class="form-h" data-i18n-html="hermesCliHint">💡 <code>which hermes</code> 查看路径</p></div>
+          <div class="test-row"><button id="h-test-btn" class="btn-sec" data-i18n="testHermes">测试 Hermes 回复</button><span id="h-test-st" class="test-status"></span></div>
+        </section>
+        <section class="set-sec"><h3 data-i18n="wechatHeader">📱 微信 / WeChat</h3>
+          <div id="wx-status" class="wx-status" data-i18n="detecting">⏳ 检测中...</div>
+          <div id="wx-actions" style="display:none">
+            <label class="ck-lbl"><input type="checkbox" id="enable-wx"> <span data-i18n="enableWechat">启用微信</span></label>
+            <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+              <button id="wx-install-btn" class="btn-sec" type="button" data-i18n="installWechatPlugin">安装/修复微信官方插件</button>
+              <button id="wx-pair-btn" class="btn-sec" style="display:none" disabled data-i18n="getQr">📱 获取二维码</button>
+              <a id="wx-qr-link" style="display:none;font-size:12px;color:var(--accent)" target="_blank" rel="noopener noreferrer"></a>
+              <button id="wx-confirm-btn" class="btn-sec" style="display:none" data-i18n="confirmPair">✅ 已扫码，开始配对</button>
+            </div>
+            <p class="form-h" data-i18n="wechatIntegratedHint">DualMind 已集成腾讯微信官方 OpenClaw 插件和安装器。先安装/修复插件，再生成微信扫码二维码；如果没有拿到真实二维码，界面不会跳转到 OpenClaw 控制台。</p>
+            <div id="wx-pair-result" class="wx-pair-result" style="display:none">
+              <img id="wx-qr-img" class="wx-qr-img" alt="WeChat QR code" style="display:none">
+              <p id="wx-pair-msg"></p>
+            </div>
+          </div>
+        </section>
+	        <section class="set-sec"><h3 data-i18n="roleHeader">🎭 角色模式 / Role Mode</h3>
+	          <select id="role-mode" class="chat-select" style="width:100%">
+	            <option value="openclaw-main">OpenClaw 主执行 + Hermes 副协作</option>
+	            <option value="hermes-main">Hermes 主执行 + OpenClaw 副协作</option>
+	          </select>
+	          <p class="form-h" data-i18n="roleHint">主副只代表当前回合的执行权；日常聊天里两个 AI 都可以自然发言。</p>
+	        </section>
+        <section class="set-sec"><h3 data-i18n="executionCapabilityHeader">🧩 执行能力 / Execution Capability</h3>
+          <div class="cap-grid">
+            <div class="cap-card"><span>OpenClaw</span><b id="oc-exec-cap">...</b></div>
+            <div class="cap-card"><span>Hermes</span><b id="hm-exec-cap">...</b></div>
+          </div>
+          <p id="current-exec-cap" class="cap-current warn">...</p>
+          <p class="form-h" data-i18n="executionCapabilityHint">执行类任务会先检查当前主 AI 是否具备真实文件/命令执行能力。</p>
+        </section>
+        <section class="set-sec"><h3 data-i18n="safetyHeader">🛡️ 安全 / Safety</h3>
+          <label class="ck-lbl"><input type="checkbox" id="confirm-risky"> <span data-i18n="settingConfirmRisky">危险操作前需要用户确认</span></label>
+          <label class="ck-lbl safety-danger"><input type="checkbox" id="allow-remote-code"> <span data-i18n="allowRemoteCode">允许远程消息触发代码执行</span></label>
+          <p class="form-h" data-i18n="allowRemoteCodeHint">建议保持关闭。微信等远程消息会进入回合记录，由用户在 Web UI 继续确认。</p>
+        </section>
+        <section class="set-sec"><h3 data-i18n="serverHeader">服务器</h3>
+          <div style="display:flex;gap:8px;align-items:center"><label data-i18n="portLabel">端口</label><input type="number" id="srv-p" value="3000" class="form-i" style="max-width:100px"><button id="restart-btn" class="btn-sec" data-i18n="restartBtn">🔄 重启</button></div>
+        </section>
+        <div class="set-actions"><button id="save-btn" class="btn-primary" data-i18n="saveBtn">💾 保存设置</button><button id="detect-btn" class="btn-sec" data-i18n="detectBtn">🔍 重新检测</button></div>
+      </div>
+    </div>
+
+    <div id="panel-turns" class="panel">
+      <div class="panel-header">
+        <h2 data-i18n="turnsHeader">🧭 回合记录 / Turns</h2>
+        <button id="refresh-turns" class="btn-sec" data-i18n="refreshTurns">🔄 刷新</button>
+      </div>
+      <div class="turn-filters">
+        <select id="turn-filter-status" class="form-i" aria-label="Turn status filter">
+          <option value="" data-i18n="filterAllStatuses">全部状态</option>
+          <option value="done">done</option>
+          <option value="partial">partial</option>
+          <option value="error">error</option>
+          <option value="blocked">blocked</option>
+          <option value="needs-confirmation">needs-confirmation</option>
+          <option value="queued">queued</option>
+          <option value="cancelled">cancelled</option>
+          <option value="rejected">rejected</option>
+        </select>
+        <select id="turn-filter-source" class="form-i" aria-label="Turn source filter">
+          <option value="" data-i18n="filterAllSources">全部来源</option>
+          <option value="web">web</option>
+          <option value="wechat">wechat</option>
+        </select>
+        <select id="turn-filter-intent" class="form-i" aria-label="Turn intent filter">
+          <option value="" data-i18n="filterAllIntents">全部意图</option>
+          <option value="casual">casual</option>
+          <option value="qa">qa</option>
+          <option value="planning">planning</option>
+          <option value="debate">debate</option>
+          <option value="coding">coding</option>
+          <option value="risky">risky</option>
+        </select>
+      </div>
+      <div class="turns-layout">
+        <div class="turns-list" id="turns-list"></div>
+        <div class="turn-detail" id="turn-detail">
+          <div class="turn-empty" data-i18n="turnEmpty">选择一个回合查看详情</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="panel-docs" class="panel">
+      <div class="panel-header"><h2 data-i18n="docsHeader">📖 说明文档 / Documentation</h2></div>
+      <div class="panel-body md">
+        <h3 data-i18n="docsOverviewTitle">DualMind 是什么</h3>
+        <p data-i18n="docsOverviewBody">DualMind 是一个本地双 AI 群组协作界面，把用户、OpenClaw 和 Hermes 放在同一个群聊里。日常聊天两位 AI 都可以发言；当前主 AI 始终是站位执行者，真正涉及文件、命令或配置时只允许主 AI 操作，副 AI 负责沟通、校准、辩论、复核和提醒风险。</p>
+        <h3 data-i18n="docsQuickStartTitle">🚀 基本使用</h3>
+        <ol data-i18n-html="docsQuickStartSteps"><li>先在设置页检测 OpenClaw 和 Hermes 是否可用。</li><li>选择两个角色模式之一：OpenClaw 主执行或 Hermes 主执行。</li><li>在群聊输入消息；不点名时按当前主副关系自然协作。</li><li>使用 @OpenClaw 或 @Hermes 只会改变谁先回复，不会改变当前执行者。</li><li>涉及代码、命令、文件或配置修改时，系统会创建执行权租约，只让当前主 AI 操作。</li></ol>
+        <h3 data-i18n="docsSafetyTitle">🛡️ 执行与安全</h3>
+        <p data-i18n="docsSafetyBody">DualMind 默认把聊天和执行分开：聊天可以自由讨论，执行必须加锁。副 AI 可以反驳、纠正、建议、阻断风险，但不能声称自己改了文件、运行了命令，也不能说等拿到执行权后再写入或保存。危险操作需要用户确认；微信等远程消息默认只能进入回合记录，不能直接触发代码执行。</p>
+        <h3 data-i18n="docsStreamingTitle">🌊 输出与回合记录</h3>
+        <p data-i18n="docsStreamingBody">AI 回复前会显示思考动画。当前 OpenClaw/Hermes CLI 适配器使用模拟流式输出：服务端拿到完整回复后再分块显示。每一轮都会写入结构化回合记录，可查看参与者、执行者、Action Lease、状态、消息和事件。</p>
+        <h3 data-i18n="docsWechatTitle">📱 微信集成</h3>
+        <p data-i18n="docsWechatBody">DualMind 内置微信消息桥接入口，支持把远程消息接入群组。发布公开版本时建议保持远程代码执行关闭。</p>
+        <ol data-i18n-html="docsWechatSteps"><li>打开设置面板，勾选“启用微信”</li><li>点击“📱 获取二维码”</li><li>复制链接在浏览器打开，用微信扫码</li><li>在微信中确认授权</li><li>点击“✅ 已扫码，开始配对”</li><li>配对后微信消息进入回合记录，由用户在 Web UI 继续处理</li></ol>
+	        <h3 data-i18n="docsRoleTitle">🎭 角色模式</h3>
+	        <table data-i18n-html="docsRoleTable"><tr><th>模式</th><th>说明</th></tr><tr><td>OpenClaw 主 / Hermes 副</td><td>日常聊天两者都可自然发言；执行任务由 OpenClaw 持执行权，Hermes 负责沟通、校准、辩论和复核</td></tr><tr><td>Hermes 主 / OpenClaw 副</td><td>日常聊天两者都可自然发言；执行任务由 Hermes 持执行权，OpenClaw 负责沟通、校准、辩论和复核</td></tr></table>
+        <h3 data-i18n="docsCalibrationTitle">🧭 群聊校准</h3>
+        <p data-i18n="docsCalibrationBody">如果一个 AI 的回答出现明显事实、时间、角色或安全问题，另一个 AI 可以主动纠正；被纠正方会简短确认理解并收口。没有问题时不会额外追加无意义消息。</p>
+        <h3 data-i18n="faqTitle">❓ 常见问题</h3>
+        <p><strong data-i18n="faqOpenClawQ">Q: OpenClaw 不回复？</strong></p><p data-i18n-html="faqOpenClawA">检查 Gateway 是否运行。终端运行 <code>curl localhost:18789/health</code> 验证。</p>
+        <p><strong data-i18n="faqHermesQ">Q: Hermes 不回复？</strong></p><p data-i18n-html="faqHermesA">确认 Hermes 已安装。<code>hermes --version</code></p>
+        <p><strong data-i18n="faqWechatQ">Q: 微信消息收不到？</strong></p><p data-i18n="faqWechatA">重新配对微信插件。</p>
+        <p><strong data-i18n="faqPortQ">Q: 怎么改端口？</strong></p><p data-i18n="faqPortA">设置 → 端口 → 保存 → 重启服务。</p>
+        <div class="support-section">
+          <div class="support-copy">
+            <h3 data-i18n="docsDonationTitle">打赏作者</h3>
+            <p data-i18n="docsDonationBody">如果 DualMind 对你有帮助，欢迎通过微信收款码支持作者继续维护。</p>
+            <p data-i18n-html="docsFeedbackBody">如果你在使用本程序中有好的想法、建议或问题反馈，可以发送邮件给作者：<a href="mailto:kkkliao@88.com">kkkliao@88.com</a>。</p>
+          </div>
+          <img class="donation-qr" src="/assets/donation-wechat.png" alt="WeChat donation QR code">
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+  <script src="/app.js?v={{ASSET_VERSION}}"></script>
+</body>
+</html>

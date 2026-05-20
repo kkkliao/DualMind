@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>DualMind Setup</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#0a0c10;color:#e8eaed;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+    .card{width:560px;max-width:100%;background:#12141a;border:1px solid #1e2235;border-radius:16px;padding:28px;box-shadow:0 24px 80px rgba(0,0,0,.45)}
+    .brand{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px}
+    .brand img{width:34px;height:34px;border-radius:50%}
+    h1{font-size:25px;text-align:center;margin-bottom:4px}
+    .sub{text-align:center;color:#9ca3b0;font-size:13px;line-height:1.5;margin-bottom:22px}
+    .step{display:none}
+    .step.active{display:block}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .lang-btn,.btn,.btn-sec{border:none;border-radius:10px;cursor:pointer;font-weight:650}
+    .lang-btn{flex:1;min-width:160px;padding:14px 18px;background:#1a1d27;border:1px solid #1e2235;color:#e8eaed;font-size:15px}
+    .lang-btn:hover,.btn-sec:hover{border-color:#7c3aed;background:rgba(124,58,237,.14)}
+    .btn{padding:11px 22px;background:linear-gradient(135deg,#7c3aed,#10b981);color:#fff;font-size:14px}
+    .btn-sec{padding:10px 16px;background:#1a1d27;border:1px solid #1e2235;color:#e8eaed;font-size:13px}
+    .actions{display:flex;justify-content:space-between;gap:10px;margin-top:22px}
+    .probe{display:flex;justify-content:space-between;gap:12px;padding:11px 12px;border:1px solid #1e2235;background:#1a1d27;border-radius:10px;margin:8px 0;font-size:13px}
+    .probe span:last-child{text-align:right;word-break:break-all}
+    label{display:block;color:#cbd5e1;font-size:13px;margin:13px 0 6px}
+    select,input{width:100%;padding:11px 12px;border:1px solid #1e2235;border-radius:10px;background:#1a1d27;color:#e8eaed;font-size:14px;outline:none}
+    select:focus,input:focus{border-color:#7c3aed}
+    p{color:#9ca3b0;font-size:13px;line-height:1.65;margin:8px 0}
+    .ok{color:#10b981}.warn{color:#f59e0b}.err{color:#ef4444}
+    .hint{font-size:12px;color:#6b7280}
+    .pill{display:inline-block;margin:4px 4px 0 0;padding:4px 8px;border:1px solid #1e2235;border-radius:999px;color:#9ca3b0;font-size:12px}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand">
+      <img src="/oc-avatar.png" alt="OpenClaw">
+      <img src="/hermes-avatar.png" alt="Hermes">
+    </div>
+    <h1>DualMind</h1>
+    <p class="sub" id="subtitle">Local OpenClaw × Hermes group chat</p>
+
+    <section class="step active" id="step-lang">
+      <p id="lang-title">选择语言 / Select Language</p>
+      <div class="row">
+        <button class="lang-btn" onclick="setLang('zh')">中文</button>
+        <button class="lang-btn" onclick="setLang('en')">English</button>
+      </div>
+    </section>
+
+    <section class="step" id="step-welcome">
+      <p id="welcome-text"></p>
+      <div>
+        <span class="pill">OpenClaw</span>
+        <span class="pill">Hermes</span>
+        <span class="pill">Local-first</span>
+        <span class="pill">Role modes</span>
+      </div>
+      <div class="actions">
+        <button class="btn-sec" onclick="show('step-lang')" data-setup-i18n="setupBack">Back</button>
+        <button class="btn" onclick="detect()" data-setup-i18n="setupNext">Next</button>
+      </div>
+    </section>
+
+    <section class="step" id="step-detect">
+      <p id="detect-title"></p>
+      <div class="probe"><span>OpenClaw CLI</span><span id="oc-cli">...</span></div>
+      <div class="probe"><span>OpenClaw Gateway</span><span id="oc-gateway">...</span></div>
+      <div class="probe"><span>Hermes CLI</span><span id="hm-cli">...</span></div>
+      <label id="oc-path-label" for="oc-path">OpenClaw CLI Path</label>
+      <input id="oc-path" placeholder="/path/to/openclaw">
+      <label id="oc-url-label" for="oc-url">OpenClaw Gateway URL</label>
+      <input id="oc-url" placeholder="http://127.0.0.1:18789">
+      <label id="oc-mode-label" for="oc-mode">OpenClaw Mode</label>
+      <select id="oc-mode">
+        <option value="agent">Agent execution mode</option>
+        <option value="infer">Infer fast chat mode</option>
+      </select>
+      <p class="hint" id="oc-mode-hint"></p>
+      <label id="hm-path-label" for="hm-path">Hermes CLI Path</label>
+      <input id="hm-path" placeholder="/path/to/hermes">
+      <p class="hint" id="detect-hint"></p>
+      <div class="actions">
+        <button class="btn-sec" onclick="show('step-welcome')" data-setup-i18n="setupBack">Back</button>
+        <button class="btn" onclick="show('step-role')" data-setup-i18n="setupNext">Next</button>
+      </div>
+    </section>
+
+    <section class="step" id="step-role">
+      <p id="role-title"></p>
+      <label for="role-mode" id="role-label"></label>
+      <select id="role-mode">
+        <option value="openclaw-main">OpenClaw main, Hermes supporting</option>
+        <option value="hermes-main">Hermes main, OpenClaw supporting</option>
+      </select>
+      <p class="hint" id="role-hint"></p>
+      <div class="actions">
+        <button class="btn-sec" onclick="show('step-detect')" data-setup-i18n="setupBack">Back</button>
+        <button class="btn" onclick="show('step-safety')" data-setup-i18n="setupNext">Next</button>
+      </div>
+    </section>
+
+    <section class="step" id="step-safety">
+      <p id="safety-title"></p>
+      <label><input type="checkbox" id="local-only" checked> <span id="local-only-label"></span></label>
+      <label><input type="checkbox" id="confirm-risky" checked> <span id="confirm-risky-label"></span></label>
+      <label><input type="checkbox" id="remote-code"> <span id="remote-code-label"></span></label>
+      <p class="hint" id="safety-hint"></p>
+      <div class="actions">
+        <button class="btn-sec" onclick="show('step-role')" data-setup-i18n="setupBack">Back</button>
+        <button class="btn" onclick="finish()" data-setup-i18n="setupFinish">Finish</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    var lang='zh';
+    var detected={openclaw:{},hermes:{}};
+    var text={};
+    async function loadSetupI18n(){
+      try{var r=await fetch('/i18n/'+lang+'.json?v={{ASSET_VERSION}}');if(r.ok)text=await r.json();}
+      catch(e){text={};}
+    }
+    function T(k){return text[k]||k}
+    function show(id){document.querySelectorAll('.step').forEach(function(s){s.classList.remove('active')});document.getElementById(id).classList.add('active');applyText();}
+    async function setLang(value){lang=value;localStorage.setItem('dualmind_lang',lang);await loadSetupI18n();show('step-welcome');}
+    function applyText(){
+      document.documentElement.lang=lang==='zh'?'zh-CN':'en';
+      document.getElementById('subtitle').textContent=T('setupSubtitle');
+      document.getElementById('welcome-text').textContent=T('setupWelcome');
+      document.getElementById('detect-title').textContent=T('setupDetectTitle');
+      document.getElementById('detect-hint').textContent=T('setupDetectHint');
+      document.getElementById('oc-path-label').textContent=T('setupOcPathLabel');
+      document.getElementById('oc-mode-label').textContent=T('setupOcModeLabel');
+      document.getElementById('oc-mode-hint').textContent=T('setupOcModeHint');
+      var ocModeOptions={agent:T('ocModeAgent'),infer:T('ocModeInfer')};
+      Array.from(document.getElementById('oc-mode').options).forEach(function(option){
+        option.textContent=ocModeOptions[option.value]||option.textContent;
+      });
+      document.getElementById('role-title').textContent=T('setupRoleTitle');
+      document.getElementById('role-label').textContent=T('setupRoleLabel');
+      document.getElementById('role-hint').textContent=T('setupRoleHint');
+      var roleOptions=T('roleOptions');
+      if(roleOptions&&typeof roleOptions==='object'){
+        Array.from(document.getElementById('role-mode').options).forEach(function(option){
+          option.textContent=roleOptions[option.value]||option.textContent;
+        });
+      }
+      document.getElementById('safety-title').textContent=T('setupSafetyTitle');
+      document.getElementById('local-only-label').textContent=T('setupLocalOnly');
+      document.getElementById('confirm-risky-label').textContent=T('setupConfirmRisky');
+      document.getElementById('remote-code-label').textContent=T('setupRemoteCode');
+      document.getElementById('safety-hint').textContent=T('setupSafetyHint');
+      document.querySelectorAll('[data-setup-i18n]').forEach(function(el){el.textContent=T(el.dataset.setupI18n);});
+    }
+    function statusHtml(ok,value){return ok?'<span class="ok">'+T('setupDetected')+(value?': '+value:'')+'</span>':'<span class="warn">'+T('setupMissing')+'</span>'}
+    async function detect(){
+      show('step-detect');
+      try{
+        var r=await fetch('/api/setup/detect');var d=await r.json();detected=d.detected||detected;
+        var oc=detected.openclaw||{},hm=detected.hermes||{};
+        document.getElementById('oc-cli').innerHTML=statusHtml(!!oc.binPath,oc.binPath||'');
+        document.getElementById('oc-gateway').innerHTML=statusHtml(!!oc.gatewayRunning,oc.gatewayUrl||'');
+        document.getElementById('hm-cli').innerHTML=statusHtml(!!hm.binPath,hm.binPath||'');
+        if(oc.binPath)document.getElementById('oc-path').value=oc.binPath;
+        if(oc.gatewayUrl)document.getElementById('oc-url').value=oc.gatewayUrl;
+        if(hm.binPath)document.getElementById('hm-path').value=hm.binPath;
+      }catch(e){
+        document.getElementById('oc-cli').innerHTML='<span class="err">Error</span>';
+        document.getElementById('oc-gateway').innerHTML='<span class="err">Error</span>';
+        document.getElementById('hm-cli').innerHTML='<span class="err">Error</span>';
+      }
+    }
+    async function finish(){
+      var body={
+        setup:{completed:true,completedAt:new Date().toISOString(),language:lang},
+        roleMode:document.getElementById('role-mode').value,
+        openclaw:{gatewayUrl:document.getElementById('oc-url').value.trim(),binPath:document.getElementById('oc-path').value.trim()||((detected.openclaw&&detected.openclaw.binPath)||''),mode:document.getElementById('oc-mode').value||'agent'},
+        hermes:{binPath:document.getElementById('hm-path').value.trim()},
+        server:{host:document.getElementById('local-only').checked?'127.0.0.1':''},
+        safety:{confirmRisky:document.getElementById('confirm-risky').checked,allowRemoteCodeExecution:document.getElementById('remote-code').checked}
+      };
+      await fetch('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      localStorage.setItem('dualmind_lang',lang);
+      localStorage.setItem('dualmind_setup_done','1');
+      location.href='/';
+    }
+    async function initSetup(){lang=localStorage.getItem('dualmind_lang')||'zh';await loadSetupI18n();applyText();}
+    initSetup();
+  </script>
+</body>
+</html>
