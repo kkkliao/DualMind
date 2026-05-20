@@ -71,7 +71,7 @@ http://127.0.0.1:3000
 http://127.0.0.1:3000/setup
 ```
 
-引导页会检测 OpenClaw / Hermes 路径、OpenClaw Gateway URL、角色模式和安全偏好。保存后，服务端会在本机生成私有的 `config.json`。公开仓库只提交 `config.example.json`，不要提交自己的 `config.json`。
+引导页会检测 OpenClaw / Hermes 路径、OpenClaw Gateway URL、角色模式和安全偏好。保存后，服务端会在本机生成私有的 `config.json`。仓库只提供可共享的 `config.example.json` 模板，每个用户自己的 `config.json` 都保留在本机。
 
 ## 角色模式
 
@@ -245,9 +245,9 @@ npm run i18n:check
 
 当前测试覆盖角色模式、点名优先、执行权租约、执行复核、副 AI 只读复核、策略警告、远程安全策略、WeChat channel、adapter 能力协议、JSON 输出解析、SSE、turn/task 存储、配置脱敏和中英文 i18n key。
 
-## 发布到 GitHub 前
+## 仓库内容
 
-建议公开上传这些内容：
+本仓库包含：
 
 - 源代码：`server.js`、`src/`、`public/`、`scripts/`、`test/`
 - 项目文档：`README.md`、`README-zh.md`、`SECURITY.md`、`CONTRIBUTING.md`、`CHANGELOG.md`
@@ -255,14 +255,15 @@ npm run i18n:check
 - 依赖锁：`package.json`、`package-lock.json`
 - 许可证：`LICENSE`
 
-不要上传：
+以下文件会在本地运行时生成，并且已被 Git 忽略：
 
 - `.env`
 - `config.json`
 - `node_modules/`
 - `data/*.json`
 - `data/logs/`
-- 个人聊天记录、微信凭证、本地路径、token、账号信息
+
+它们可能包含个人聊天记录、微信凭证、本地路径、token 或账号信息，应保留在用户自己的电脑上。
 
 ## 贡献
 

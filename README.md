@@ -71,7 +71,7 @@ On first run, or whenever `config.json` is incomplete, the home page redirects t
 http://127.0.0.1:3000/setup
 ```
 
-The wizard detects OpenClaw / Hermes paths, the OpenClaw Gateway URL, role mode, and safety preferences. After setup, the server writes a local private `config.json`. Public repositories should commit `config.example.json`, not a personal `config.json`.
+The wizard detects OpenClaw / Hermes paths, the OpenClaw Gateway URL, role mode, and safety preferences. After setup, the server writes a local private `config.json`. The repository only includes `config.example.json` as the shareable template; each user keeps their own `config.json` locally.
 
 ## Role Modes
 
@@ -245,9 +245,9 @@ npm run i18n:check
 
 Current tests cover role modes, mention-first speaking, Action Lease execution control, execution-review closure, supporting-AI read-only review, policy warnings, remote safety policy, WeChat channel behavior, adapter capability contracts, JSON output extraction, SSE, turn/task storage, config redaction, and Chinese/English i18n keys.
 
-## Before Publishing To GitHub
+## Repository Contents
 
-Recommended to publish:
+This repository includes:
 
 - Source code: `server.js`, `src/`, `public/`, `scripts/`, `test/`
 - Project docs: `README.md`, `README-zh.md`, `SECURITY.md`, `CONTRIBUTING.md`, `CHANGELOG.md`
@@ -255,14 +255,15 @@ Recommended to publish:
 - Dependency lockfile: `package.json`, `package-lock.json`
 - License: `LICENSE`
 
-Do not publish:
+These files are created locally at runtime and are intentionally ignored by Git:
 
 - `.env`
 - `config.json`
 - `node_modules/`
 - `data/*.json`
 - `data/logs/`
-- personal chat logs, WeChat credentials, local paths, tokens, account data
+
+They may contain personal chat logs, WeChat credentials, local paths, tokens, or account data, so they should stay on the user's machine.
 
 ## Contributing
 
